@@ -1,5 +1,5 @@
 
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import TagList from '../../src/components/TagList'
 
 describe('TagList', () => {

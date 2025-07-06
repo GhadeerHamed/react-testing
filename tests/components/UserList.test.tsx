@@ -16,7 +16,7 @@ describe('UserList', () => {
       {id: 1, name: 'Ghadeer', isAdmin: true},
       {id:2, name: 'Ali'}
     ]
-    render(<UserList users={users} />).debug()
+    render(<UserList users={users} />)
 
     expect(screen.getAllByRole('listitem')).toHaveLength(2)
 
