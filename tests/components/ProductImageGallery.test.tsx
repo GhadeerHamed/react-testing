@@ -1,7 +1,5 @@
 
 import { render, screen } from '@testing-library/react'
-import { User } from '../../src/entities'
-import UserList from '../../src/components/UserList'
 import ProductImageGallery from '../../src/components/ProductImageGallery'
 
 
