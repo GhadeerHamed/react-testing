@@ -18,7 +18,7 @@ describe('OrderStatusSelector', () => {
     return {
       button: screen.getByRole('combobox'),
       user: userEvent.setup(),
-      onChange: onChange
+      getOptions: () => screen.findAllByRole('option')
     }
   }
 
@@ -28,11 +28,11 @@ describe('OrderStatusSelector', () => {
   })
 
   it('renders correct statuses', async () => {
-    const { button, user, onChange } = renderComponent()
+    const { button, user, getOptions } = renderComponent()
 
     await user.click(button)
 
-    const options = await screen.findAllByRole('option')
+    const options = await getOptions()
     expect( options ).toHaveLength(3)
 
     const labels = options.map( option => option.textContent)
