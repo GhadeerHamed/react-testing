@@ -1,11 +1,8 @@
-
+import {faker} from '@faker-js/faker'
+import { db } from './mocks/db'
 describe('group', () => {
     it('should', async () => {
-        const res = await fetch('/categories')
-
-        const data = await res.json()
-        console.log(data)
-
-        expect(data).toHaveLength(3)
+        const p = db.product.create()
+        console.log(db.product.count())
     })
 })
