@@ -13,9 +13,16 @@ describe('BrowseProductsPage', () => {
   const categories: Category[] = []
 
   beforeAll(() => {
-    [1, 2, 3].forEach((item) => products.push(db.product.create({ name: `Product ${item}` })));
-    [1, 2].forEach((item) => categories.push(db.category.create({ name: `Category ${item}` })));
-  })
+    [1, 2].forEach((item) => {
+      const category = db.category.create({ name: `Category ${item}` }); 
+      categories.push(category);
+
+    [1, 2].forEach((item) => 
+      products.push(db.product.create({ 
+        categoryId: category.id
+      })));
+    });
+  });
 
   afterAll(() => {
     db.product.deleteMany({ where: { id: { in: products.map(p => p.id) } } })
@@ -112,4 +119,56 @@ describe('BrowseProductsPage', () => {
     })
   })
 
+  it('should filter products by category when category is selected', async () => {
+    const { getCategoriesSkeleton, getCategoryCombobox, user } = renderComponent()
+
+    await waitForElementToBeRemoved(getCategoriesSkeleton)
+
+    const categoryFilter = getCategoryCombobox()
+
+    await user.click(categoryFilter!)
+
+    const selectedCategory = categories[0]
+    const option = screen.getByRole('option', { name: selectedCategory.name })
+    await user.click(option)
+
+    const products = db.product.findMany({
+      where: {
+        categoryId: {
+          equals: selectedCategory.id
+        }
+      }
+    })
+
+    const rows = screen.getAllByRole('row')
+
+    expect(rows).toHaveLength(products.length + 1) // +1 for the header row
+
+    products.forEach(product => {
+      expect(screen.getByText(product.name)).toBeInTheDocument()
+    })
+  })
+  
+  it('should render all products if "All" category is selected', async () => {
+    const { getCategoriesSkeleton, getCategoryCombobox, user } = renderComponent()
+
+    await waitForElementToBeRemoved(getCategoriesSkeleton)
+
+    const categoryFilter = getCategoryCombobox()
+
+    await user.click(categoryFilter!)
+
+    const option = screen.getByRole('option', { name: /all/i })
+    await user.click(option)
+
+    const products = db.product.getAll()
+
+    const rows = screen.getAllByRole('row')
+
+    expect(rows).toHaveLength(products.length + 1) // +1 for the header row
+
+    products.forEach(product => {
+      expect(screen.getByText(product.name)).toBeInTheDocument()
+    })
+  })
 }) 
