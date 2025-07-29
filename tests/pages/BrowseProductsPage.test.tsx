@@ -171,4 +171,34 @@ describe('BrowseProductsPage', () => {
       expect(screen.getByText(product.name)).toBeInTheDocument()
     })
   })
+
+  it('should filter products by category', async () => {
+    const { getCategoriesSkeleton, user, getCategoryCombobox } = renderComponent()
+
+    await waitForElementToBeRemoved(getCategoriesSkeleton)
+
+    const categoryFilter = getCategoryCombobox()
+
+    await user.click(categoryFilter!)
+
+    const selectedCategory = categories[0]
+    const option = screen.getByRole('option', { name: selectedCategory.name })
+    await user.click(option)
+
+    const products = db.product.findMany({
+      where: {
+        categoryId: {
+          equals: selectedCategory.id
+        }
+      }
+    })
+
+    const rows = screen.getAllByRole('row')
+
+    expect(rows).toHaveLength(products.length + 1) // +1 for the header row
+
+    products.forEach(product => {
+      expect(screen.getByText(product.name)).toBeInTheDocument()
+    })
+  })
 }) 
